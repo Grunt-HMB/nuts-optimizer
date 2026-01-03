@@ -1,5 +1,46 @@
 import requests
 import streamlit as st
+import base64
+from pathlib import Path
+
+# =========================================================
+# PAGE CONFIG
+# =========================================================
+st.set_page_config(
+    page_title="Research Lab Nuts Optimizer",
+    layout="wide"
+)
+
+# =========================================================
+# BACKGROUND IMAGE (hmb.webp)
+# =========================================================
+def set_background(image_file):
+    img_bytes = Path(image_file).read_bytes()
+    encoded = base64.b64encode(img_bytes).decode()
+
+    st.markdown(
+        f"""
+        <style>
+        .stApp {{
+            background-image: url("data:image/webp;base64,{encoded}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }}
+
+        /* lichte overlay voor leesbaarheid */
+        .block-container {{
+            background-color: rgba(0, 0, 0, 0.55);
+            padding: 2rem;
+            border-radius: 12px;
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+# 👉 achtergrond activeren
+set_background("hmb.webp")
 
 # =========================================================
 # FX helpers (GECACHED)
@@ -37,14 +78,13 @@ def get_inr_to_others():
     r.raise_for_status()
     return r.json()["rates"]
 
-
 # =========================================================
 # UI
 # =========================================================
 st.title("Research Lab Nuts Optimizer")
 
 # ---------------------------------------------------------
-# Amount + Currency (zelfde lijn)
+# Amount + Currency
 # ---------------------------------------------------------
 col_amount, col_currency = st.columns([2, 3])
 
@@ -75,7 +115,7 @@ margin = st.number_input(
 )
 
 # ---------------------------------------------------------
-# LIVE FX PREVIEW (alleen informatief)
+# LIVE FX PREVIEW (bij INR)
 # ---------------------------------------------------------
 if currency == "INR" and amount > 0:
     try:
@@ -98,7 +138,7 @@ if amount > 0:
         budget_inr = amount * rate
         margin_inr = margin * rate
 
-        prices = [205, 409, 1020]     # INR
+        prices = [205, 409, 1020]
         units  = [6000, 12800, 34500]
 
         best = None
@@ -130,7 +170,6 @@ if amount > 0:
 
             st.success("Best combination found")
 
-            # ---- Exchange rate & budget (klein lettertype)
             col_l, col_r = st.columns(2)
             with col_l:
                 st.caption(f"Exchange rate ({currency} → INR)")
