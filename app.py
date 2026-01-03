@@ -2,15 +2,6 @@ import requests
 import streamlit as st
 
 # =========================================================
-# Page config (MAG SLECHTS 1x, MOET BOVENAAN)
-# =========================================================
-st.set_page_config(
-    page_title="Release Lab Nuts Optimizer",
-    page_icon="icon.png",   # zorg dat dit bestand bestaat
-    layout="centered"
-)
-
-# =========================================================
 # Live FX → INR (robuust, met fallback)
 # =========================================================
 def get_rate_to_inr(currency: str) -> float:
@@ -48,7 +39,9 @@ def get_rate_to_inr(currency: str) -> float:
 # =========================================================
 # UI
 # =========================================================
-st.title("Release Lab Nuts Optimizer")
+st.set_page_config(page_title="Research Lab Nuts Optimizer", layout="centered")
+
+st.title("Research Lab Nuts Optimizer")
 
 amount = st.number_input(
     "Amount to deposit",
@@ -64,8 +57,8 @@ currency = st.radio(
 )
 
 margin = st.number_input(
-    "Extra money for more options (same currency)",
-    value=0.0,
+    "Extra money for more possibilities (same currency)",
+    value=2.0,
     step=0.5,
     min_value=0.0
 )
@@ -75,17 +68,19 @@ margin = st.number_input(
 # =========================================================
 if st.button("Calculate"):
     try:
+        # FX conversion
         rate = get_rate_to_inr(currency)
         budget_inr = amount * rate
         margin_inr = margin * rate
 
         # Packages (INR)
-        prices = [205, 409, 1020]
+        prices = [205, 409, 1020]       # Rs
         units  = [6000, 12800, 34500]
 
         best = None
         max_c = int(budget_inr // prices[2])
 
+        # Optimization
         for c in range(max_c - 5, max_c + 6):
             if c < 0:
                 continue
