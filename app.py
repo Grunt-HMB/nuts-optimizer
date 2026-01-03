@@ -12,41 +12,47 @@ st.set_page_config(
 )
 
 # =========================================================
-# MOBILE-ONLY BACKGROUND
+# MOBILE BACKGROUND + DESKTOP COMPACT LAYOUT
 # =========================================================
-def set_mobile_background(image_file: str):
+def set_layout(image_file: str):
     img_bytes = Path(image_file).read_bytes()
     encoded = base64.b64encode(img_bytes).decode()
 
     st.markdown(
         f"""
         <style>
-        /* Desktop: GEEN achtergrond */
+        /* Desktop: compact, geen background */
         .stApp {{
             background-color: #0e1117;
         }}
 
-        /* Content max width (desktop compacter) */
         .block-container {{
-            max-width: 1100px;
+            max-width: 950px;
             margin: auto;
         }}
 
-        /* Mobile: achtergrond AAN */
+        /* Logo positioning */
+        .logo {{
+            margin-top: 60px;
+        }}
+
+        /* Mobile: background aan */
         @media (max-width: 768px) {{
             .stApp {{
                 background-image: url("data:image/webp;base64,{encoded}");
                 background-size: contain;
                 background-repeat: no-repeat;
                 background-position: top center;
-                background-color: #0e1117;
             }}
 
             .block-container {{
                 background-color: rgba(0,0,0,0.55);
                 padding: 1rem;
-                border-radius: 0;
                 max-width: 100%;
+            }}
+
+            .logo {{
+                margin-top: 0;
             }}
         }}
         </style>
@@ -54,10 +60,10 @@ def set_mobile_background(image_file: str):
         unsafe_allow_html=True
     )
 
-set_mobile_background("hmb.webp")
+set_layout("hmb.webp")
 
 # =========================================================
-# FX helpers (GECACHED)
+# FX helpers
 # =========================================================
 @st.cache_data(ttl=300)
 def get_rate_to_inr(currency: str) -> float:
@@ -91,7 +97,7 @@ def get_inr_to_others():
     return r.json()["rates"]
 
 # =========================================================
-# UI – INPUTS
+# INPUTS
 # =========================================================
 st.title("Research Lab Nuts Optimizer")
 
@@ -167,9 +173,9 @@ if amount > 0:
             st.write(f"{budget_inr:.0f}")
 
         # =================================================
-        # PACKAGES + INVESTMENT + SMALLER LOGO
+        # TEXT + LOGO (COMPACT)
         # =================================================
-        col_text, col_logo = st.columns([5, 1])
+        col_text, col_logo = st.columns([4, 2])
 
         with col_text:
             st.write("### 📦 Packages")
@@ -184,4 +190,6 @@ if amount > 0:
             st.write(f"Remaining amount: {remaining_currency:.2f} {currency}")
 
         with col_logo:
-            st.image("hmb.webp", width=180)  # <<< expliciet kleiner
+            st.markdown("<div class='logo'>", unsafe_allow_html=True)
+            st.image("hmb.webp", width=220)
+            st.markdown("</div>", unsafe_allow_html=True)
