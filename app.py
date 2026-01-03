@@ -39,7 +39,7 @@ def get_rate_to_inr(currency: str) -> float:
 # =========================================================
 # UI
 # =========================================================
-st.set_page_config(page_title="Nut Optimizer", layout="centered")
+st.set_page_config(page_title="Research Labs Nuts Optimizer", layout="centered")
 
 st.title("Nut Optimizer")
 
@@ -57,8 +57,8 @@ currency = st.radio(
 )
 
 margin = st.number_input(
-    "Allowed margin (same currency)",
-    value=2.0,
+    "Extra money for more options (same currency)",
+    value=0,
     step=0.5,
     min_value=0.0
 )
