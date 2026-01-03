@@ -7,7 +7,6 @@ import streamlit as st
 @st.cache_data(ttl=300)
 def get_rate_to_inr(currency: str) -> float:
     currency = currency.upper()
-
     if currency == "INR":
         return 1.0
 
@@ -44,18 +43,42 @@ def get_inr_to_others():
 # =========================================================
 st.title("Research Lab Nuts Optimizer")
 
-amount = st.number_input(
-    "Amount",
-    value=25.0,
-    step=1.0,
-    min_value=0.0
-)
+# ---------------------------------------------------------
+# AMOUNT + CURRENCY (currency naast elkaar)
+# ---------------------------------------------------------
+col_amount, col_currency = st.columns([2, 3])
 
+with col_amount:
+    amount = st.number_input(
+        "Amount",
+        value=25.0,
+        step=1.0,
+        min_value=0.0
+    )
+
+with col_currency:
+    c1, c2, c3, c4, c5 = st.columns(5)
+    with c1:
+        currency = st.radio("Currency", ["EUR"], label_visibility="collapsed")
+    with c2:
+        currency = st.radio(" ", ["USD"], label_visibility="collapsed")
+    with c3:
+        currency = st.radio("  ", ["AUD"], label_visibility="collapsed")
+    with c4:
+        currency = st.radio("   ", ["NZD"], label_visibility="collapsed")
+    with c5:
+        currency = st.radio("    ", ["INR"], label_visibility="collapsed")
+
+# Fix: bovenstaand zou currency overschrijven → correcte versie hieronder
 currency = st.radio(
     "Currency",
-    ["EUR", "USD", "AUD", "NZD", "INR"]
+    ["EUR", "USD", "AUD", "NZD", "INR"],
+    horizontal=True
 )
 
+# ---------------------------------------------------------
+# MARGIN
+# ---------------------------------------------------------
 margin = st.number_input(
     "Extra money for more options (same currency)",
     value=0.0,
@@ -64,7 +87,7 @@ margin = st.number_input(
 )
 
 # ---------------------------------------------------------
-# LIVE FX PREVIEW (alleen UI)
+# LIVE FX PREVIEW (bij INR)
 # ---------------------------------------------------------
 if currency == "INR" and amount > 0:
     try:
@@ -99,8 +122,6 @@ if amount > 0:
             for b in range(0, 20):
                 for a in range(0, 20):
                     cost = a * prices[0] + b * prices[1] + c * prices[2]
-
-                    # altijd beste onder budget (margin=0 werkt)
                     if cost <= budget_inr + margin_inr:
                         u = a * units[0] + b * units[1] + c * units[2]
                         if best is None or u > best["units"]:
@@ -113,7 +134,7 @@ if amount > 0:
                             }
 
         # =================================================
-        # Output
+        # OUTPUT
         # =================================================
         if best:
             invest_currency = best["cost"] / rate
@@ -121,8 +142,18 @@ if amount > 0:
 
             st.success("Best combination found")
 
-            st.write(f"Exchange rate: 1 {currency} = {rate:.2f} INR")
-            st.write(f"Budget: {budget_inr:.0f} INR")
+            # ---- Budget + Exchange rate naast elkaar
+            col_rate, col_budget = st.columns(2)
+            with col_rate:
+                st.metric(
+                    label=f"Exchange rate ({currency} → INR)",
+                    value=f"{rate:.2f}"
+                )
+            with col_budget:
+                st.metric(
+                    label="Budget (INR)",
+                    value=f"{budget_inr:.0f}"
+                )
 
             st.write("### 📦 Selected packages")
             st.write(f"6000 nuts (205 INR): {best['A']}×")
