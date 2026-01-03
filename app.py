@@ -12,58 +12,39 @@ st.set_page_config(
 )
 
 # =========================================================
-# MOBILE BACKGROUND + DESKTOP COMPACT LAYOUT
+# LAYOUT CSS (compact desktop, mobile ok)
 # =========================================================
-def set_layout(image_file: str):
-    img_bytes = Path(image_file).read_bytes()
-    encoded = base64.b64encode(img_bytes).decode()
-
+def set_layout():
     st.markdown(
-        f"""
+        """
         <style>
-        /* Desktop: compact, geen background */
-        .stApp {{
-            background-color: #0e1117;
-        }}
-
-        .block-container {{
+        .block-container {
             max-width: 950px;
             margin: auto;
-        }}
+        }
 
-        /* Logo positioning */
-        .logo {{
-            margin-top: 60px;
-        }}
+        .logo {
+            margin-top: 90px;
+        }
 
-        /* Mobile: background aan */
-        @media (max-width: 768px) {{
-            .stApp {{
-                background-image: url("data:image/webp;base64,{encoded}");
-                background-size: contain;
-                background-repeat: no-repeat;
-                background-position: top center;
-            }}
-
-            .block-container {{
-                background-color: rgba(0,0,0,0.55);
-                padding: 1rem;
+        @media (max-width: 768px) {
+            .block-container {
                 max-width: 100%;
-            }}
-
-            .logo {{
+                padding: 1rem;
+            }
+            .logo {
                 margin-top: 0;
-            }}
-        }}
+            }
+        }
         </style>
         """,
         unsafe_allow_html=True
     )
 
-set_layout("hmb.webp")
+set_layout()
 
 # =========================================================
-# FX helpers
+# FX helpers (cached)
 # =========================================================
 @st.cache_data(ttl=300)
 def get_rate_to_inr(currency: str) -> float:
@@ -85,16 +66,6 @@ def get_rate_to_inr(currency: str) -> float:
         )
         r.raise_for_status()
         return r.json()["rates"]["INR"]
-
-@st.cache_data(ttl=300)
-def get_inr_to_others():
-    r = requests.get(
-        "https://api.frankfurter.app/latest",
-        params={"from": "INR"},
-        timeout=10
-    )
-    r.raise_for_status()
-    return r.json()["rates"]
 
 # =========================================================
 # INPUTS
@@ -120,18 +91,6 @@ margin = st.number_input(
     step=0.5,
     min_value=0.0
 )
-
-if currency == "INR" and amount > 0:
-    try:
-        rates = get_inr_to_others()
-        st.caption(
-            f"≈ {amount * rates['EUR']:.2f} EUR | "
-            f"{amount * rates['USD']:.2f} USD | "
-            f"{amount * rates['AUD']:.2f} AUD | "
-            f"{amount * rates['NZD']:.2f} NZD"
-        )
-    except Exception:
-        pass
 
 # =========================================================
 # AUTO CALC
@@ -164,6 +123,7 @@ if amount > 0:
 
         st.success("Best combination found")
 
+        # Exchange rate + budget
         col_l, col_r = st.columns(2)
         with col_l:
             st.caption(f"Exchange rate ({currency} → INR)")
@@ -173,7 +133,7 @@ if amount > 0:
             st.write(f"{budget_inr:.0f}")
 
         # =================================================
-        # TEXT + LOGO (COMPACT)
+        # PACKAGES + LOGO
         # =================================================
         col_text, col_logo = st.columns([4, 2])
 
@@ -182,14 +142,34 @@ if amount > 0:
             st.write(f"6000 nuts (205 INR): {best['A']}×")
             st.write(f"12800 nuts (409 INR): {best['B']}×")
             st.write(f"34500 nuts (1020 INR): {best['C']}×")
-            st.write(f"**Total nuts:** {best['units']:,}")
-            st.write(f"**Total price:** {best['cost']} INR")
+
+            # Total nuts + price naast elkaar
+            col_nuts, col_price = st.columns(2)
+            with col_nuts:
+                st.write(f"**Total nuts:** {best['units']:,}")
+            with col_price:
+                st.write(f"**Total price:** {best['cost']} INR")
 
             st.write("### 💰 Investment")
-            st.write(f"Invested amount: {invest_currency:.2f} {currency}")
-            st.write(f"Remaining amount: {remaining_currency:.2f} {currency}")
+
+            # Investment naast elkaar
+            col_inv, col_rem = st.columns(2)
+            with col_inv:
+                st.write(f"Invested amount: {invest_currency:.2f} {currency}")
+            with col_rem:
+                st.write(f"Remaining amount: {remaining_currency:.2f} {currency}")
 
         with col_logo:
             st.markdown("<div class='logo'>", unsafe_allow_html=True)
-            st.image("hmb.webp", width=220)
+            st.image("hmb.webp", width=260)
             st.markdown("</div>", unsafe_allow_html=True)
+
+        # =================================================
+        # BOTTOM IMAGE (hcr2.png)
+        # =================================================
+        st.markdown("---")
+        st.image(
+            "hcr2.png",
+            use_column_width=True,
+            caption=None
+        )
