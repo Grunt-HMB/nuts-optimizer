@@ -54,7 +54,8 @@ if st.button("Calculate"):
             for b in range(0, 20):
                 for a in range(0, 20):
                     cost = a*prices[0] + b*prices[1] + c*prices[2]
-                    if budget_inr - margin_inr <= cost <= budget_inr + margin_inr:
+                  #   if budget_inr - margin_inr <= cost <= budget_inr + margin_inr:
+                                             if cost <= budget_inr + margin_inr:  
                         u = a*units[0] + b*units[1] + c*units[2]
                         if best is None or u > best["units"]:
                             best = {"A": a, "B": b, "C": c, "cost": cost, "units": u}
