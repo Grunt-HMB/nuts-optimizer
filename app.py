@@ -22,7 +22,7 @@ st.markdown(
 
     /* logo naast packages */
     .logo {
-        margin-top: -20px;
+        margin-top: -60px;
     }
 
     /* waarden (0×, bedragen, etc.) */
