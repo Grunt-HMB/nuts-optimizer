@@ -12,7 +12,7 @@ st.set_page_config(
 )
 
 # =========================================================
-# RESPONSIVE BACKGROUND (DEFINITIEVE FIX)
+# BACKGROUND — OPTIE A (contain, geen crop, geen zoom)
 # =========================================================
 def set_background(image_file: str):
     img_bytes = Path(image_file).read_bytes()
@@ -21,16 +21,14 @@ def set_background(image_file: str):
     st.markdown(
         f"""
         <style>
-        /* ===== DESKTOP ===== */
         .stApp {{
             background-image: url("data:image/webp;base64,{encoded}");
-            background-size: 1920px auto;   /* ← GEEN ZOOM */
-            background-position: top center;
+            background-size: contain;
             background-repeat: no-repeat;
+            background-position: center;
             background-color: #0e1117;
         }}
 
-        /* Content overlay */
         .block-container {{
             background-color: rgba(0, 0, 0, 0.55);
             padding: 2rem;
@@ -39,13 +37,7 @@ def set_background(image_file: str):
             margin: auto;
         }}
 
-        /* ===== MOBILE ===== */
         @media (max-width: 768px) {{
-            .stApp {{
-                background-size: contain;
-                background-position: top center;
-            }}
-
             .block-container {{
                 padding: 1rem;
                 border-radius: 0;
@@ -57,7 +49,6 @@ def set_background(image_file: str):
         unsafe_allow_html=True
     )
 
-# activeer achtergrond
 set_background("hmb.webp")
 
 # =========================================================
@@ -101,6 +92,9 @@ def get_inr_to_others():
 # =========================================================
 st.title("Research Lab Nuts Optimizer")
 
+# ---------------------------------------------------------
+# Amount + Currency (naast elkaar)
+# ---------------------------------------------------------
 col_amount, col_currency = st.columns([2, 3])
 
 with col_amount:
@@ -119,6 +113,9 @@ with col_currency:
         label_visibility="collapsed"
     )
 
+# ---------------------------------------------------------
+# Margin
+# ---------------------------------------------------------
 margin = st.number_input(
     "Extra money for more options (same currency)",
     value=0.0,
@@ -126,6 +123,9 @@ margin = st.number_input(
     min_value=0.0
 )
 
+# ---------------------------------------------------------
+# LIVE FX PREVIEW (bij INR)
+# ---------------------------------------------------------
 if currency == "INR" and amount > 0:
     try:
         rates = get_inr_to_others()
@@ -139,7 +139,7 @@ if currency == "INR" and amount > 0:
         st.caption("FX preview unavailable")
 
 # =========================================================
-# AUTO CALC
+# AUTOMATISCHE BEREKENING
 # =========================================================
 if amount > 0:
     try:
@@ -147,7 +147,7 @@ if amount > 0:
         budget_inr = amount * rate
         margin_inr = margin * rate
 
-        prices = [205, 409, 1020]
+        prices = [205, 409, 1020]     # INR
         units  = [6000, 12800, 34500]
 
         best = None
@@ -170,6 +170,9 @@ if amount > 0:
                                 "units": u
                             }
 
+        # =================================================
+        # OUTPUT
+        # =================================================
         if best:
             invest_currency = best["cost"] / rate
             remaining_currency = amount - invest_currency
@@ -199,6 +202,9 @@ if amount > 0:
                 st.write(f"Remaining amount: {remaining_currency:.2f} {currency}")
             else:
                 st.write(f"Overspend: {abs(remaining_currency):.2f} {currency}")
+
+        else:
+            st.warning("Budget too low for any package.")
 
     except Exception as e:
         st.error(str(e))
