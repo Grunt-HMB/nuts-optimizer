@@ -44,7 +44,7 @@ def get_inr_to_others():
 st.title("Research Lab Nuts Optimizer")
 
 # ---------------------------------------------------------
-# AMOUNT + CURRENCY (currency naast elkaar)
+# Amount + Currency (zelfde lijn)
 # ---------------------------------------------------------
 col_amount, col_currency = st.columns([2, 3])
 
@@ -57,27 +57,15 @@ with col_amount:
     )
 
 with col_currency:
-    c1, c2, c3, c4, c5 = st.columns(5)
-    with c1:
-        currency = st.radio("Currency", ["EUR"], label_visibility="collapsed")
-    with c2:
-        currency = st.radio(" ", ["USD"], label_visibility="collapsed")
-    with c3:
-        currency = st.radio("  ", ["AUD"], label_visibility="collapsed")
-    with c4:
-        currency = st.radio("   ", ["NZD"], label_visibility="collapsed")
-    with c5:
-        currency = st.radio("    ", ["INR"], label_visibility="collapsed")
-
-# Fix: bovenstaand zou currency overschrijven → correcte versie hieronder
-currency = st.radio(
-    "Currency",
-    ["EUR", "USD", "AUD", "NZD", "INR"],
-    horizontal=True
-)
+    currency = st.radio(
+        "Currency",
+        ["EUR", "USD", "AUD", "NZD", "INR"],
+        horizontal=True,
+        label_visibility="collapsed"
+    )
 
 # ---------------------------------------------------------
-# MARGIN
+# Margin
 # ---------------------------------------------------------
 margin = st.number_input(
     "Extra money for more options (same currency)",
@@ -87,7 +75,7 @@ margin = st.number_input(
 )
 
 # ---------------------------------------------------------
-# LIVE FX PREVIEW (bij INR)
+# LIVE FX PREVIEW (alleen informatief)
 # ---------------------------------------------------------
 if currency == "INR" and amount > 0:
     try:
@@ -110,7 +98,7 @@ if amount > 0:
         budget_inr = amount * rate
         margin_inr = margin * rate
 
-        prices = [205, 409, 1020]
+        prices = [205, 409, 1020]     # INR
         units  = [6000, 12800, 34500]
 
         best = None
@@ -142,18 +130,14 @@ if amount > 0:
 
             st.success("Best combination found")
 
-            # ---- Budget + Exchange rate naast elkaar
-            col_rate, col_budget = st.columns(2)
-            with col_rate:
-                st.metric(
-                    label=f"Exchange rate ({currency} → INR)",
-                    value=f"{rate:.2f}"
-                )
-            with col_budget:
-                st.metric(
-                    label="Budget (INR)",
-                    value=f"{budget_inr:.0f}"
-                )
+            # ---- Exchange rate & budget (klein lettertype)
+            col_l, col_r = st.columns(2)
+            with col_l:
+                st.caption(f"Exchange rate ({currency} → INR)")
+                st.write(f"{rate:.2f}")
+            with col_r:
+                st.caption("Budget (INR)")
+                st.write(f"{budget_inr:.0f}")
 
             st.write("### 📦 Selected packages")
             st.write(f"6000 nuts (205 INR): {best['A']}×")
