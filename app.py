@@ -10,7 +10,7 @@ st.set_page_config(
 )
 
 # =========================================================
-# LAYOUT CSS (compact desktop)
+# CSS (layout + styling)
 # =========================================================
 st.markdown(
     """
@@ -20,8 +20,16 @@ st.markdown(
         margin: auto;
     }
 
+    /* logo naast packages */
     .logo {
-        margin-top: 10px;
+        margin-top: -20px;   /* ← hoger zetten: negatief mag */
+    }
+
+    /* waarden (0×, 1×, bedragen) */
+    .value {
+        margin-left: 12px;
+        font-weight: 600;
+        color: #4CAF50;
     }
 
     @media (max-width: 768px) {
@@ -63,7 +71,7 @@ def get_rate_to_inr(currency: str) -> float:
         return r.json()["rates"]["INR"]
 
 # =========================================================
-# TITLE + IMAGE (¼ WIDTH)
+# TITLE + IMAGE (¼ breedte)
 # =========================================================
 col_title, col_img = st.columns([3, 1])
 
@@ -71,10 +79,7 @@ with col_title:
     st.title("Research Lab Nuts Optimizer")
 
 with col_img:
-    st.image(
-        "hcr2.png",
-        use_column_width=True
-    )
+    st.image("hcr2.png", use_column_width=True)
 
 # =========================================================
 # INPUTS
@@ -82,12 +87,7 @@ with col_img:
 col_amount, col_currency = st.columns([2, 3])
 
 with col_amount:
-    amount = st.number_input(
-        "Amount",
-        value=25.0,
-        step=1.0,
-        min_value=0.0
-    )
+    amount = st.number_input("Amount", value=25.0, step=1.0, min_value=0.0)
 
 with col_currency:
     currency = st.radio(
@@ -156,23 +156,45 @@ if amount > 0:
 
         with col_text:
             st.write("### 📦 Packages")
-            st.write(f"6000 nuts (205 INR):    {best['A']}×")
-            st.write(f"12800 nuts (409 INR):    {best['B']}×")
-            st.write(f"34500 nuts (1020 INR):    {best['C']}×")
+
+            st.markdown(
+                f"6000 nuts (205 INR): <span class='value'>{best['A']}×</span>",
+                unsafe_allow_html=True
+            )
+            st.markdown(
+                f"12800 nuts (409 INR): <span class='value'>{best['B']}×</span>",
+                unsafe_allow_html=True
+            )
+            st.markdown(
+                f"34500 nuts (1020 INR): <span class='value'>{best['C']}×</span>",
+                unsafe_allow_html=True
+            )
 
             col_nuts, col_price = st.columns(2)
             with col_nuts:
-                st.write(f"**Total nuts:** {best['units']:,}")
+                st.markdown(
+                    f"**Total nuts:** <span class='value'>{best['units']:,}</span>",
+                    unsafe_allow_html=True
+                )
             with col_price:
-                st.write(f"**Total price:** {best['cost']} INR")
+                st.markdown(
+                    f"**Total price:** <span class='value'>{best['cost']} INR</span>",
+                    unsafe_allow_html=True
+                )
 
             st.write("### 💰 Investment")
 
             col_inv, col_rem = st.columns(2)
             with col_inv:
-                st.write(f"Invested amount: {invest_currency:.2f} {currency}")
+                st.markdown(
+                    f"Invested amount: <span class='value'>{invest_currency:.2f} {currency}</span>",
+                    unsafe_allow_html=True
+                )
             with col_rem:
-                st.write(f"Remaining amount: {remaining_currency:.2f} {currency}")
+                st.markdown(
+                    f"Remaining amount: <span class='value'>{remaining_currency:.2f} {currency}</span>",
+                    unsafe_allow_html=True
+                )
 
         with col_logo:
             st.markdown("<div class='logo'>", unsafe_allow_html=True)
