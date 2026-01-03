@@ -1,7 +1,5 @@
 import requests
 import streamlit as st
-import base64
-from pathlib import Path
 
 # =========================================================
 # PAGE CONFIG
@@ -12,36 +10,33 @@ st.set_page_config(
 )
 
 # =========================================================
-# LAYOUT CSS (compact desktop, mobile ok)
+# LAYOUT CSS (compact desktop)
 # =========================================================
-def set_layout():
-    st.markdown(
-        """
-        <style>
+st.markdown(
+    """
+    <style>
+    .block-container {
+        max-width: 950px;
+        margin: auto;
+    }
+
+    .logo {
+        margin-top: 90px;
+    }
+
+    @media (max-width: 768px) {
         .block-container {
-            max-width: 950px;
-            margin: auto;
+            max-width: 100%;
+            padding: 1rem;
         }
-
         .logo {
-            margin-top: 90px;
+            margin-top: 0;
         }
-
-        @media (max-width: 768px) {
-            .block-container {
-                max-width: 100%;
-                padding: 1rem;
-            }
-            .logo {
-                margin-top: 0;
-            }
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
-
-set_layout()
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # =========================================================
 # FX helpers (cached)
@@ -68,14 +63,31 @@ def get_rate_to_inr(currency: str) -> float:
         return r.json()["rates"]["INR"]
 
 # =========================================================
+# TITLE + IMAGE (¼ WIDTH)
+# =========================================================
+col_title, col_img = st.columns([3, 1])
+
+with col_title:
+    st.title("Research Lab Nuts Optimizer")
+
+with col_img:
+    st.image(
+        "hcr2.png",
+        use_column_width=True
+    )
+
+# =========================================================
 # INPUTS
 # =========================================================
-st.title("Research Lab Nuts Optimizer")
-
 col_amount, col_currency = st.columns([2, 3])
 
 with col_amount:
-    amount = st.number_input("Amount", value=25.0, step=1.0, min_value=0.0)
+    amount = st.number_input(
+        "Amount",
+        value=25.0,
+        step=1.0,
+        min_value=0.0
+    )
 
 with col_currency:
     currency = st.radio(
@@ -115,7 +127,13 @@ if amount > 0:
                 if cost <= budget_inr + margin_inr:
                     u = a*units[0] + b*units[1] + c*units[2]
                     if best is None or u > best["units"]:
-                        best = {"A":a,"B":b,"C":c,"cost":cost,"units":u}
+                        best = {
+                            "A": a,
+                            "B": b,
+                            "C": c,
+                            "cost": cost,
+                            "units": u
+                        }
 
     if best:
         invest_currency = best["cost"] / rate
@@ -123,7 +141,6 @@ if amount > 0:
 
         st.success("Best combination found")
 
-        # Exchange rate + budget
         col_l, col_r = st.columns(2)
         with col_l:
             st.caption(f"Exchange rate ({currency} → INR)")
@@ -143,7 +160,6 @@ if amount > 0:
             st.write(f"12800 nuts (409 INR): {best['B']}×")
             st.write(f"34500 nuts (1020 INR): {best['C']}×")
 
-            # Total nuts + price naast elkaar
             col_nuts, col_price = st.columns(2)
             with col_nuts:
                 st.write(f"**Total nuts:** {best['units']:,}")
@@ -152,7 +168,6 @@ if amount > 0:
 
             st.write("### 💰 Investment")
 
-            # Investment naast elkaar
             col_inv, col_rem = st.columns(2)
             with col_inv:
                 st.write(f"Invested amount: {invest_currency:.2f} {currency}")
@@ -163,13 +178,3 @@ if amount > 0:
             st.markdown("<div class='logo'>", unsafe_allow_html=True)
             st.image("hmb.webp", width=260)
             st.markdown("</div>", unsafe_allow_html=True)
-
-        # =================================================
-        # BOTTOM IMAGE (hcr2.png)
-        # =================================================
-        st.markdown("---")
-        st.image(
-            "hcr2.png",
-            use_column_width=True,
-            caption=None
-        )
