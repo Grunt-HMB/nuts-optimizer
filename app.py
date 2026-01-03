@@ -30,11 +30,11 @@ def get_rate_to_inr(currency: str) -> float:
 # =========================================================
 # UI
 # =========================================================
-st.title("Nut Optimizer")
+st.title("Research Lab Nuts Optimizer")
 
 amount = st.number_input("Amount", value=25.0, step=1.0)
 currency = st.radio("Currency", ["EUR", "USD", "AUD", "NZD", "INR"])
-margin = st.number_input("Margin (same currency)", value=2.0, step=0.5)
+margin = st.number_input("Extra money for more options (same currency)", value=2.0, step=0.5)
 
 if st.button("Calculate"):
     try:
@@ -59,18 +59,37 @@ if st.button("Calculate"):
                         if best is None or u > best["units"]:
                             best = {"A": a, "B": b, "C": c, "cost": cost, "units": u}
 
-        if best:
-            st.success("Best combination found")
-            st.write(f"Exchange rate: 1 {currency} = {rate:.2f} INR")
-            st.write(f"Budget: {budget_inr:.0f} INR ± {margin_inr:.0f}")
-            st.write("### Result")
-            st.write(f"6000 nuts (205 Rs): {best['A']}×")
-            st.write(f"12800 nuts (409 Rs): {best['B']}×")
-            st.write(f"34500 nuts (1020 Rs): {best['C']}×")
-            st.write(f"**Total nuts:** {best['units']:,}")
-            st.write(f"**Total price:** {best['cost']} Rs")
-        else:
-            st.warning("No valid combination found")
+if best:
+    cost_in_currency = best['cost'] / rate
+    unused_amount = amount - cost_in_currency
+
+    st.success("Best combination found")
+
+    st.markdown(f"""
+### 💰 Deposit & Spend Summary
+
+**A. Amount to deposit (input):**  
+{amount:.2f} **{currency}**
+
+**B. Effective amount used:**  
+{best['cost']} INR  
+≈ **{cost_in_currency:.2f} {currency}**
+
+**Unused / remaining amount:**  
+≈ **{unused_amount:.2f} {currency}**
+
+---
+
+### 📦 Selected Packages
+- 6000 nuts (205 Rs): **{best['A']}×**
+- 12800 nuts (409 Rs): **{best['B']}×**
+- 34500 nuts (1020 Rs): **{best['C']}×**
+
+**Total nuts:** {best['units']:,}
+""")
+else:
+    st.warning("No valid combination found")
+
 
     except Exception as e:
         st.error(str(e))
