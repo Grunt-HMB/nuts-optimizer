@@ -156,9 +156,9 @@ if amount > 0:
 
         with col_text:
             st.write("### 📦 Packages")
-            st.write(f"6000 nuts (205 INR): {best['A']}×")
-            st.write(f"12800 nuts (409 INR): {best['B']}×")
-            st.write(f"34500 nuts (1020 INR): {best['C']}×")
+            st.write(f"6000 nuts (205 INR):    {best['A']}×")
+            st.write(f"12800 nuts (409 INR):    {best['B']}×")
+            st.write(f"34500 nuts (1020 INR):    {best['C']}×")
 
             col_nuts, col_price = st.columns(2)
             with col_nuts:
