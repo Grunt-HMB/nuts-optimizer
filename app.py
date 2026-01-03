@@ -21,7 +21,7 @@ st.markdown(
     }
 
     .logo {
-        margin-top: 40px;
+        margin-top: 10px;
     }
 
     @media (max-width: 768px) {
