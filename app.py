@@ -41,7 +41,14 @@ def get_rate_to_inr(currency: str) -> float:
 # =========================================================
 st.set_page_config(page_title="Research Labs Nuts Optimizer", layout="centered")
 
-st.title("Nut Optimizer")
+st.set_page_config(
+    page_title="Nut Optimizer",
+    page_icon="icon.png",
+    layout="centered"
+)
+
+
+st.title("Release Lab Nuts Optimizer")
 
 amount = st.number_input(
     "Amount to deposit",
