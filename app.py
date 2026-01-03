@@ -22,10 +22,10 @@ st.markdown(
 
     /* logo naast packages */
     .logo {
-        margin-top: -20px;   /* ← hoger zetten: negatief mag */
+        margin-top: -20px;
     }
 
-    /* waarden (0×, 1×, bedragen) */
+    /* waarden (0×, bedragen, etc.) */
     .value {
         margin-left: 12px;
         font-weight: 600;
@@ -135,11 +135,12 @@ if amount > 0:
                             "units": u
                         }
 
+    # =====================================================
+    # OUTPUT
+    # =====================================================
     if best:
         invest_currency = best["cost"] / rate
         remaining_currency = amount - invest_currency
-
-        st.success("Best combination found")
 
         col_l, col_r = st.columns(2)
         with col_l:
@@ -149,9 +150,9 @@ if amount > 0:
             st.caption("Budget (INR)")
             st.write(f"{budget_inr:.0f}")
 
-        # =================================================
+        # ---------------------------------------------
         # PACKAGES + LOGO
-        # =================================================
+        # ---------------------------------------------
         col_text, col_logo = st.columns([4, 2])
 
         with col_text:
@@ -200,3 +201,6 @@ if amount > 0:
             st.markdown("<div class='logo'>", unsafe_allow_html=True)
             st.image("hmb.webp", width=260)
             st.markdown("</div>", unsafe_allow_html=True)
+
+    else:
+        st.warning("No valid combination found for this budget.")
