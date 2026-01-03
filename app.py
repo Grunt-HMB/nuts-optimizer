@@ -60,6 +60,7 @@ if st.button("Calculate"):
                             best = {"A": a, "B": b, "C": c, "cost": cost, "units": u}
 
         if best:
+            invest_currency = best["cost"] / rate
             st.success("Best combination found")
             st.write(f"Exchange rate: 1 {currency} = {rate:.2f} INR")
             st.write(f"Budget: {budget_inr:.0f} INR ± {margin_inr:.0f}")
@@ -69,6 +70,8 @@ if st.button("Calculate"):
             st.write(f"34500 nuts (1020 Rs): {best['C']}×")
             st.write(f"**Total nuts:** {best['units']:,}")
             st.write(f"**Total price:** {best['cost']} Rs")
+            st.write(f"Invested amount: {invest_currency:.2f} {currency}")
+            st.write(f"Equivalent in INR: {best['cost']} Rs")
         else:
             st.warning("No valid combination found")
 
