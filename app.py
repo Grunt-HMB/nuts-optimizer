@@ -199,7 +199,7 @@ if amount > 0:
 
         with col_logo:
             st.markdown("<div class='logo'>", unsafe_allow_html=True)
-            st.image("hmb.webp", width=260)
+            st.image("HoldMyBeerLogo.png", width=260)
             st.markdown("</div>", unsafe_allow_html=True)
 
     else:
