@@ -22,7 +22,7 @@ st.markdown(
 
     /* logo naast packages */
     .logo {
-        margin-top: -60px;
+        margin-top: -20px;
     }
 
     /* waarden (0×, bedragen, etc.) */
@@ -47,7 +47,7 @@ st.markdown(
 )
 
 # =========================================================
-# FX helpers
+# FX helpers (cached)
 # =========================================================
 @st.cache_data(ttl=300)
 def get_rate_to_inr(currency: str) -> float:
@@ -71,7 +71,7 @@ def get_rate_to_inr(currency: str) -> float:
         return r.json()["rates"]["INR"]
 
 # =========================================================
-# TITLE + IMAGE
+# TITLE + IMAGE (¼ breedte)
 # =========================================================
 col_title, col_img = st.columns([3, 1])
 
@@ -91,8 +91,10 @@ with col_amount:
 
 with col_currency:
     currency = st.radio(
+        "Currency",
         ["EUR", "USD", "AUD", "NZD", "INR"],
-        horizontal=True
+        horizontal=True,
+        label_visibility="collapsed"
     )
 
 margin = st.number_input(
@@ -125,8 +127,17 @@ if amount > 0:
                 if cost <= budget_inr + margin_inr:
                     u = a*units[0] + b*units[1] + c*units[2]
                     if best is None or u > best["units"]:
-                        best = {"A":a,"B":b,"C":c,"cost":cost,"units":u}
+                        best = {
+                            "A": a,
+                            "B": b,
+                            "C": c,
+                            "cost": cost,
+                            "units": u
+                        }
 
+    # =====================================================
+    # OUTPUT
+    # =====================================================
     if best:
         invest_currency = best["cost"] / rate
         remaining_currency = amount - invest_currency
@@ -139,31 +150,56 @@ if amount > 0:
             st.caption("Budget (INR)")
             st.write(f"{budget_inr:.0f}")
 
+        # ---------------------------------------------
+        # PACKAGES + LOGO
+        # ---------------------------------------------
         col_text, col_logo = st.columns([4, 2])
 
         with col_text:
             st.write("### 📦 Packages")
 
-            st.markdown(f"6000 nuts (205 INR): <span class='value'>{best['A']}×</span>", unsafe_allow_html=True)
-            st.markdown(f"12800 nuts (409 INR): <span class='value'>{best['B']}×</span>", unsafe_allow_html=True)
-            st.markdown(f"34500 nuts (1020 INR): <span class='value'>{best['C']}×</span>", unsafe_allow_html=True)
+            st.markdown(
+                f"6000 nuts (205 INR): <span class='value'>{best['A']}×</span>",
+                unsafe_allow_html=True
+            )
+            st.markdown(
+                f"12800 nuts (409 INR): <span class='value'>{best['B']}×</span>",
+                unsafe_allow_html=True
+            )
+            st.markdown(
+                f"34500 nuts (1020 INR): <span class='value'>{best['C']}×</span>",
+                unsafe_allow_html=True
+            )
 
-            col_n, col_p = st.columns(2)
-            with col_n:
-                st.markdown(f"**Total nuts:** <span class='value'>{best['units']:,}</span>", unsafe_allow_html=True)
-            with col_p:
-                st.markdown(f"**Total price:** <span class='value'>{best['cost']} INR</span>", unsafe_allow_html=True)
+            col_nuts, col_price = st.columns(2)
+            with col_nuts:
+                st.markdown(
+                    f"**Total nuts:** <span class='value'>{best['units']:,}</span>",
+                    unsafe_allow_html=True
+                )
+            with col_price:
+                st.markdown(
+                    f"**Total price:** <span class='value'>{best['cost']} INR</span>",
+                    unsafe_allow_html=True
+                )
 
             st.write("### 💰 Investment")
-            col_i, col_r = st.columns(2)
-            with col_i:
-                st.markdown(f"Invested amount: <span class='value'>{invest_currency:.2f} {currency}</span>", unsafe_allow_html=True)
-            with col_r:
-                st.markdown(f"Remaining amount: <span class='value'>{remaining_currency:.2f} {currency}</span>", unsafe_allow_html=True)
+
+            col_inv, col_rem = st.columns(2)
+            with col_inv:
+                st.markdown(
+                    f"Invested amount: <span class='value'>{invest_currency:.2f} {currency}</span>",
+                    unsafe_allow_html=True
+                )
+            with col_rem:
+                st.markdown(
+                    f"Remaining amount: <span class='value'>{remaining_currency:.2f} {currency}</span>",
+                    unsafe_allow_html=True
+                )
 
         with col_logo:
             st.markdown("<div class='logo'>", unsafe_allow_html=True)
-            st.image("HoldMyBeerLogo.png", width=260)
+            st.image("hmb.webp", width=260)
             st.markdown("</div>", unsafe_allow_html=True)
 
     else:
